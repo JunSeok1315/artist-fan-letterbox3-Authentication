@@ -3,7 +3,7 @@ import Home from "pages/Home";
 import Login from "pages/Login";
 import Profile from "pages/Profile";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider, useAuth } from "context/AuthContext";
+import { useAuth } from "context/AuthContext";
 
 function PrivateRoute({ element, path }) {
   const { isLoggedIn } = useAuth();
@@ -16,24 +16,28 @@ function PrivateRoute({ element, path }) {
 }
 
 function Router() {
+  const { isLoggedIn, login } = useAuth();
+  const handleLoginSuccess = () => {
+    login();
+    return <Navigate replace to="/" />;
+  };
+
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route
-            path="/detail/:id"
-            element={<PrivateRoute element={<Detail />} path="/detail/:id" />}
-          />
-          <Route path="/login" element={<Login />} />
-          <Route
-            path="/profile"
-            element={<PrivateRoute element={<Profile />} path="/profile" />}
-          />
-          <Route path="*" element={<Navigate replace to="/" />} />
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route
+          path="/detail/:id"
+          element={<PrivateRoute element={<Detail />} path="/detail/:id" />}
+        />
+        <Route
+          path="/login"
+          element={<Login onLoginSuccess={handleLoginSuccess} />}
+        />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="*" element={<Navigate replace to="/" />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
