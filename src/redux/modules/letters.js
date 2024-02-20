@@ -1,51 +1,26 @@
+import { createSlice } from "@reduxjs/toolkit";
 import fakeData from "fakeData.json";
 
-const ADD_LETTER = "letters/ADD_LETTER";
-
-const DELETE_LETTER = "letters/DELETE_LETTER";
-
-const EDIT_LETTER = "letters/EDIT_LETTER";
-
-export const addLetter = (payload) => {
-  return {
-    type: ADD_LETTER,
-    payload,
-  };
-};
-export const deleteLetter = (payload) => {
-  return {
-    type: DELETE_LETTER,
-    payload,
-  };
-};
-export const editLetter = (payload) => {
-  return {
-    type: EDIT_LETTER,
-    payload,
-  };
-};
-
-const initialState = fakeData;
-
-const letters = (state = initialState, action) => {
-  switch (action.type) {
-    case ADD_LETTER:
-      const newLetter = action.payload;
-      return [newLetter, ...state];
-    case DELETE_LETTER:
+const lettersSlice = createSlice({
+  name: "letters",
+  initialState: fakeData,
+  reducers: {
+    addLetter: (state, action) => {
+      state.unshift(action.payload);
+    },
+    deleteLetter: (state, action) => {
       const letterId = action.payload;
       return state.filter((letter) => letter.id !== letterId);
-    case EDIT_LETTER:
+    },
+    editLetter: (state, action) => {
       const { id, editingText } = action.payload;
-      return state.map((letter) => {
-        if (letter.id === id) {
-          return { ...letter, content: editingText };
-        }
-        return letter;
-      });
-    default:
-      return state;
-  }
-};
+      const letter = state.find((letter) => letter.id === id);
+      if (letter) {
+        letter.content = editingText;
+      }
+    },
+  },
+});
 
-export default letters;
+export const { addLetter, deleteLetter, editLetter } = lettersSlice.actions;
+export default lettersSlice.reducer;
